@@ -35,6 +35,13 @@ curl -L https://raw.githubusercontent.com/madumlao/rbenv-installer/master/bin/rb
 > Note: depends on the path, you will need superuser (sudo)
 permission. Feel free to ask if you need some help!
 
+## Plugins installed by default:
+
+- [rbenv/ruby-build](https://github.com/rbenv/ruby-build): allows `rbenv install`
+- [rbenv/rbenv-vars](https://github.com/rbenv/rbenv-vars): allows per-project `.rbenv-vars` files
+- [tpope/rbenv-aliases](https://github.com/tpope/rbenv-aliases): provides aliases for ruby versions
+- [madumlao/rbenv-binstubs](https://github.com/madumlao/rbenv-binstubs): allows per-project binstubs
+
 ## Uninstallation
 
 ```shell

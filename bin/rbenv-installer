@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 set -e
-[ -n "$PHPENV_DEBUG" ] && set -x
+[ -n "$RBENV_DEBUG" ] && set -x
 
-if [ -z "$PHPENV_ROOT" ]; then
-  PHPENV_ROOT="${HOME}/.phpenv"
+if [ -z "$RBENV_ROOT" ]; then
+  RBENV_ROOT="${HOME}/.rbenv"
 fi
 
 shell="$1"
@@ -37,15 +37,15 @@ checkout() {
 
 test_write_permission_in_install_folder() {
   local cmd_output=""
-  local file_test="$(dirname ${PHPENV_ROOT})/1"
+  local file_test="$(dirname ${RBENV_ROOT})/1"
   set +e
   cmd_output=$(touch $file_test 3>&1 2>&3 )
   set -e
 
   if [[ $cmd_output =~ "Permission denied" ]]; then
     echo "ERROR" | colorize_output
-    echo "Permission denied when trying to write in ${PHPENV_ROOT}." | indent_output
-    echo "Adjust your \$PHPENV_ROOT or try to use sudo." | indent_output
+    echo "Permission denied when trying to write in ${RBENV_ROOT}." | indent_output
+    echo "Adjust your \$RBENV_ROOT or try to use sudo." | indent_output
     exit 1
   else
     rm -rf $file_test
@@ -53,15 +53,15 @@ test_write_permission_in_install_folder() {
 }
 
 
-install_phpenv() {
-  echo "Installing phpenv" | colorize_output
+install_rbenv() {
+  echo "Installing rbenv" | colorize_output
 
-  if [ -d "$PHPENV_ROOT" ]; then
-    cd "$PHPENV_ROOT"
+  if [ -d "$RBENV_ROOT" ]; then
+    cd "$RBENV_ROOT"
     git pull origin master
   else
-    local PHPENV_REPO=https://github.com/madumlao/phpenv
-    checkout "$PHPENV_REPO" "$PHPENV_ROOT"
+    local RBENV_REPO=https://github.com/rbenv/rbenv
+    checkout "$RBENV_REPO" "$RBENV_ROOT"
   fi
 
   echo "Done." | indent_output
@@ -73,7 +73,7 @@ install_plugin() {
   local plugin=${1#*/}
 
   echo "Installing $vendor/$plugin" | colorize_output
-  checkout "https://github.com/${vendor}/${plugin}.git" "${PHPENV_ROOT}/plugins/${plugin}" &>/dev/null
+  checkout "https://github.com/${vendor}/${plugin}.git" "${RBENV_ROOT}/plugins/${plugin}" &>/dev/null
   echo "Done." | indent_output
   echo
 }
@@ -102,35 +102,35 @@ profile_by_shell() {
 
 test_deps() {
   if ! command -v git 1>/dev/null 2>&1; then
-    echo "phpenv: Git is not installed, can't continue." >&2 | indent_output
+    echo "rbenv: Git is not installed, can't continue." >&2 | indent_output
     exit 1
   fi
 }
 
-test_if_phpenv_is_in_path() {
-  if ! command -v phpenv 1>/dev/null; then
+test_if_rbenv_is_in_path() {
+  if ! command -v rbenv 1>/dev/null; then
 
     { echo "WARNING" | colorize_output
-      echo "# Seems you still have not added 'phpenv' to the load path." | indent_output
+      echo "# Seems you still have not added 'rbenv' to the load path." | indent_output
       echo | indent_output
     } >&2
 
-    { echo "# Load phpenv automatically by adding" | indent_output
+    { echo "# Load rbenv automatically by adding" | indent_output
       echo "# the following to $(profile_by_shell):" | indent_output
       echo
       case "$shell" in
       fish )
-        echo "set -x PHPENV_ROOT \"${PHPENV_ROOT}\""
-        echo "if test -d \"$PHPENV_ROOT\""
-        echo "  set -x PATH \"$PHPENV_ROOT/bin\" \$PATH"
-        echo '  status --is-interactive; and . (phpenv init -|psub)'
+        echo "set -x RBENV_ROOT \"${RBENV_ROOT}\""
+        echo "if test -d \"$RBENV_ROOT\""
+        echo "  set -x PATH \"$RBENV_ROOT/bin\" \$PATH"
+        echo '  status --is-interactive; and . (rbenv init -|psub)'
         echo "end"
         ;;
       * )
-        echo "export PHPENV_ROOT=\"${PHPENV_ROOT}\""
-        echo "if [ -d \"\${PHPENV_ROOT}\" ]; then"
-        echo "  export PATH=\"\${PHPENV_ROOT}/bin:\${PATH}\""
-        echo "  eval \"\$(phpenv init -)\""
+        echo "export RBENV_ROOT=\"${RBENV_ROOT}\""
+        echo "if [ -d \"\${RBENV_ROOT}\" ]; then"
+        echo "  export PATH=\"\${RBENV_ROOT}/bin:\${PATH}\""
+        echo "  eval \"\$(rbenv init -)\""
         echo "fi"
         ;;
       esac
@@ -141,8 +141,8 @@ test_if_phpenv_is_in_path() {
 
     { echo "Alright!" | colorize_output
       echo "Execute:" | indent_output
-      echo "\`phpenv commands\`       to see all you can do" | indent_output
-      echo "\`phpenv help <command>\` for information on a specific command" | indent_output
+      echo "\`rbenv commands\`       to see all you can do" | indent_output
+      echo "\`rbenv help <command>\` for information on a specific command" | indent_output
       echo
     } >&2
 
@@ -150,12 +150,13 @@ test_if_phpenv_is_in_path() {
 }
 
 echo "INFO" | colorize_output
-echo "\$PHPENV_ROOT is defined as ${PHPENV_ROOT}" | indent_output
+echo "\$RBENV_ROOT is defined as ${RBENV_ROOT}" | indent_output
 echo
 test_write_permission_in_install_folder
 test_deps
-install_phpenv
-install_plugin "php-build/php-build"
-install_plugin "madumlao/phpenv-aliases"
-install_plugin "ngyuki/phpenv-composer"
-test_if_phpenv_is_in_path
+install_rbenv
+install_plugin "rbenv/ruby-build"
+install_plugin "rbenv/rbenv-vars"
+install_plugin "tpope/rbenv-aliases"
+install_plugin "madumlao/rbenv-binstubs"
+test_if_rbenv_is_in_path

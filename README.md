@@ -14,6 +14,8 @@ curl -L https://raw.githubusercontent.com/madumlao/rbenv-installer/master/bin/rb
     | bash
 ```
 
+The script will then instruct you to edit your shell initialization files.
+
 ### Optional: Installation in other directory (i.e. system-wide)
 
 If you prefer to install `rbenv` in other directory (i.e
